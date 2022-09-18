@@ -1,0 +1,21 @@
+name: Mirroring
+
+on:
+  push:
+  delete:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '30 5 * * *'
+
+jobs:
+  mirror-elfutils:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror
+        run: |
+            git clone --mirror https://github.com/sourceware-org/elfutils
+            cd elfutils.git
+            git remote add upstream https://lygstate:${{secrets.SOURCEWARE_TOKEN}}@github.com/sourceware-org/elfutils
+            git remote set-url origin git://sourceware.org/git/elfutils.git
+            git fetch origin
+            git push upstream --mirror
